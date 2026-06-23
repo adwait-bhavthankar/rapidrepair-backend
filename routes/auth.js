@@ -77,8 +77,14 @@ router.get('/me', async (req, res) => {
       return res.json({ _id: 'admin_user_id', username: 'admin', role: 'admin', email: 'admin@quickfix.com' });
     }
     const user = await User.findById(decoded.id).select('-password');
+    if (!user) {
+      return res.status(404).json({ msg: 'User not found' });
+    }
     res.json(user);
   } catch (err) {
+    if (err.name === 'JsonWebTokenError' || err.name === 'TokenExpiredError') {
+      return res.status(401).json({ msg: 'Token is not valid' });
+    }
     res.status(500).json({ error: err.message });
   }
 });
