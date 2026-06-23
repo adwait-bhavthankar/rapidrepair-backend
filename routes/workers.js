@@ -5,8 +5,10 @@ const WorkerProfile = require('../models/WorkerProfile');
 
 router.get('/', async (req, res) => {
   try {
-    const { verified } = req.query;
-    const filter = verified === 'true' ? { verified: true } : {};
+    const { verified, category } = req.query;
+    const filter = {};
+    if (verified === 'true') filter.verified = true;
+    if (category && category !== 'all') filter.serviceCategory = category;
     const workers = await WorkerProfile.find(filter)
       .populate('user', 'username email');
     res.json(workers);

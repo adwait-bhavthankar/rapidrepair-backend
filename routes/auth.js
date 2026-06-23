@@ -73,6 +73,9 @@ router.get('/me', async (req, res) => {
     if (!token) return res.status(401).json({ msg: 'No token' });
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret_key');
+    if (decoded.role === 'admin') {
+      return res.json({ _id: 'admin_user_id', username: 'admin', role: 'admin', email: 'admin@quickfix.com' });
+    }
     const user = await User.findById(decoded.id).select('-password');
     res.json(user);
   } catch (err) {
